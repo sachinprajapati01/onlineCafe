@@ -1,0 +1,39 @@
+.home-page {
+    min-height: 100vh;
+    background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)),
+                url('../../public/genericBackground.jpg') center/cover no-repeat fixed;
+  }
+  
+  .content {
+    text-align: center;
+    padding: 50px 20px;
+  }
+  
+  .buttons {
+    margin-top: 20px;
+  }
+  
+  .button {
+    display: inline-block;
+    padding: 12px 24px;
+    margin: 0 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .user-button {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .admin-button {
+    background-color: #28a745;
+    color: white;
+  }
