@@ -1,0 +1,25 @@
+.faq {
+    background: white;
+    padding: 60px 20px;
+    text-align: center;
+  }
+  
+  .faq h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  details {
+    width: 60%;
+    margin: 10px auto;
+    padding: 10px;
+    background: #e0f7fa;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  details summary {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  

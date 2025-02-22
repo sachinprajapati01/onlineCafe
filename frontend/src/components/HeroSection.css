@@ -1,0 +1,35 @@
+.hero-section {
+    background: url("../../public/genericBackground.jpg") no-repeat center center/cover;
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+  }
+  
+  .hero-section h1 {
+    font-size: 36px;
+    font-weight: bold;
+  }
+  
+  .hero-section p {
+    font-size: 18px;
+    margin: 10px 0 20px;
+  }
+  
+  .hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .button.primary {
+    background-color: #ff5722;
+    padding: 12px 24px;
+    border-radius: 5px;
+  }
+  
+  .button.secondary {
+    background-color: #007bff;
+    padding: 12px 24px;
+    border-radius: 5px;
+  }
+  

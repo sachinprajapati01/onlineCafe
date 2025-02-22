@@ -1,39 +1,38 @@
 .home-page {
-    min-height: 100vh;
-    background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)),
-                url('../../public/genericBackground.jpg') center/cover no-repeat fixed;
-  }
-  
-  .content {
-    text-align: center;
-    padding: 50px 20px;
-  }
-  
-  .buttons {
-    margin-top: 20px;
-  }
-  
-  .button {
-    display: inline-block;
-    padding: 12px 24px;
-    margin: 0 10px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: 600;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  
-  .button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  }
-  
-  .user-button {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .admin-button {
-    background-color: #28a745;
-    color: white;
-  }
+  font-family: "Arial", sans-serif;
+  text-align: center;
+  background-color: #f9f9f9;
+  padding-bottom: 50px;
+}
+
+.content {
+  margin-top: 30px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.button {
+  padding: 12px 24px;
+  text-decoration: none;
+  color: white;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.user-button {
+  background-color: #007bff;
+}
+
+.admin-button {
+  background-color: #28a745;
+}
+
+.button:hover {
+  opacity: 0.8;
+}
