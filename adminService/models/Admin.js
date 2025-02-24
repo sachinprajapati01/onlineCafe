@@ -14,6 +14,10 @@ const adminSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
+  },
+  profile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'AdminProfile'
   }
 }, { timestamps: true });
 

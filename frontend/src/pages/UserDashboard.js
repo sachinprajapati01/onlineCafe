@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import UserLogin from '../components/UserLogin';
 import UserRegister from '../components/UserRegister';
 import './UserDashboard.css';
+import Cookies from 'js-cookie';
 const ENV = process.env;
 
 const UserDashboard = () => {
@@ -12,7 +13,7 @@ const UserDashboard = () => {
   const [admins, setAdmins] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('userToken');
+    const token = Cookies.get('userToken');
     if (token) {
       setIsAuthenticated(true);
       fetchAdmins();
@@ -29,7 +30,12 @@ const UserDashboard = () => {
   };
 
   const handleLogin = (userData) => {
-    localStorage.setItem('userToken', userData.token);
+    Cookies.set('userToken', userData.token, {
+      expires: 1, // 1 day
+      secure: true,
+      sameSite: 'strict',
+      path: '/'
+    });
     setIsAuthenticated(true);
     fetchAdmins();
   };
@@ -39,7 +45,11 @@ const UserDashboard = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('userToken');
+    Cookies.remove('userToken', { 
+      path: '/',
+      secure: true,
+      sameSite: 'strict'
+    });
     setIsAuthenticated(false);
   };
 
