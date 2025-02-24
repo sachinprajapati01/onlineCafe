@@ -1,0 +1,31 @@
+.about-us {
+    background-color: white;
+    padding: 60px 20px;
+    text-align: center;
+  }
+  
+  .about-us h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  .features {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .feature {
+    width: 220px;
+    background: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .feature h3 {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+  

@@ -1,0 +1,30 @@
+.featured-services {
+    padding: 60px 20px;
+    text-align: center;
+  }
+  
+  .featured-services h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  .service-list {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .service {
+    width: 220px;
+    background: #fff3e0;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .service h3 {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+  
