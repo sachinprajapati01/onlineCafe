@@ -42,18 +42,25 @@ const HomePage = () => {
       {/* FAQ Section */}
       <FAQ />
 
-      {/* Choose Role Section */}
-      <div className="content">
-        <p>Choose your role to continue:</p>
-        <div className="buttons">
-          <Link to="/user" className="button user-button">
-            User
-          </Link>
-          <Link to="/admin" className="button admin-button">
-            Admin
-          </Link>
+     {/* Choose Role Section */}
+     <div className="role-selection">
+        {/* Centered Get Started Button */}
+        <div className="get-started">
+          <Link to="/user" className="button primary">Get Started</Link>
+        </div>
+
+        {/* Left Side: Question */}
+        <div className="role-question">
+          <p>Want to assist users and manage services? Become an admin and help users with their document needs.</p>
+         
+        </div>
+
+        {/* Right Side: Admin Portal Link */}
+        <div className="admin-link">
+          <a href="/admin">Go to Admin Portal</a>
         </div>
       </div>
+
 
       {/* Footer */}
       <Footer />
