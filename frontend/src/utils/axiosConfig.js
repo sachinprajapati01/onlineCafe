@@ -9,7 +9,12 @@ api.interceptors.request.use((config) => {
   const userToken = Cookies.get('userToken');
   const adminToken = Cookies.get('adminToken');
   
-  if (config.url.includes('/admin/')) {
+  // Special case for activeAdmins endpoint
+  if (config.url.includes('/admin/activeAdmins')) {
+    if (userToken) {
+      config.headers.Authorization = `Bearer ${userToken}`;
+    }
+  } else if (config.url.includes('/admin/')) {
     if (adminToken) {
       config.headers.Authorization = `Bearer ${adminToken}`;
     }

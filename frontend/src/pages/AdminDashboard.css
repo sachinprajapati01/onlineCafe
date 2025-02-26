@@ -169,8 +169,8 @@ input:checked + .slider:before {
 
 .logout-button {
   margin-left: auto;
-  background-color: #3835dc;
-  color: #c82333;
+  background-color: #c82333;
+  color: #fcfcfc;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
@@ -181,7 +181,7 @@ input:checked + .slider:before {
 }
 
 .logout-button:hover {
-  background-color: #c82333;
+  background-color: #a70717;
   color : white;
   transform: scale(1.05); /* Slight scale effect on hover */
 }

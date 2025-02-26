@@ -21,8 +21,7 @@ const AdminDashboard = () => {
     totalRatings: 0,
   });
   const [requests, setRequests] = useState([]);
-  const [isOnline, setIsOnline] = useState(true);
-  const [price, setPrice] = useState(0);
+  const [isOnline, setIsOnline] = useState(false);
 
   useEffect(() => {
     const token = Cookies.get("adminToken");
@@ -277,7 +276,11 @@ const AdminDashboard = () => {
         title="Admin Portal"
         subtitle="Manage Your Services"
         logoUrl="/OnlineCafe.png"
-      />
+      >
+        <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+      </Header>
       <div className="dashboard-container">
         <nav className="dashboard-nav">
           <button
@@ -291,9 +294,6 @@ const AdminDashboard = () => {
             onClick={() => setActiveSection("profile")}
           >
             Profile
-          </button>
-          <button onClick={handleLogout} className="logout-button">
-            Logout
           </button>
         </nav>
         <main className="dashboard-main">
