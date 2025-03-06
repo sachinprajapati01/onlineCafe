@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const Chat = require('./models/Chat');
 const logger = require('./middleware/logger');
-
+const routes = require('./routes/chatRoutes');
 dotenv.config();
 
 const app = express();
@@ -108,6 +108,7 @@ io.on('connection', (socket) => {
   });
 });
 
+app.use('/', routes);
 // Add a simple endpoint to test the logger
 app.get('/', (req, res) => {
   res.json({ status: 'Chat Service is running' });

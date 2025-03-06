@@ -1,99 +1,84 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import "./ChatModal.css";
+import api from "../utils/axiosConfig";
 
 const ChatModal = ({ selectedAdmin, onClose, socketRef }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef();
 
-  // Fetch chat history when component mounts or admin changes
+  // Fetch chat history when component mounts
   useEffect(() => {
-    if (selectedAdmin && socketRef.current?.connected) {
-      const userId = JSON.parse(atob(Cookies.get("userToken").split(".")[1])).id;
-      
-      // Set up listener for chat history
-      socketRef.current.off("chatHistory");
-      socketRef.current.on("chatHistory", (history) => {
-        console.log("Chat history received:", history);
-        setMessages(history);
-      });
-      
-      // Request chat history
-      socketRef.current.emit(
-        "fetchChatHistory",
-        {
-          userId,
-          adminId: selectedAdmin._id,
-        },
-        (response) => {
-          if (response?.error) {
-            console.error("Error fetching chat history:", response.error);
-          }
-        }
-      );
+    if (selectedAdmin && (selectedAdmin.adminId || selectedAdmin._id)) {
+      fetchChatHistory();
+    }
 
-      // Listen for new incoming messages
+    // Listen for new messages
+    if (socketRef.current?.connected) {
       socketRef.current.off("receiveMessage");
       socketRef.current.on("receiveMessage", (message) => {
         setMessages((prev) => [...prev, message]);
       });
     }
     
-    // Cleanup listeners when component unmounts
     return () => {
       if (socketRef.current) {
-        socketRef.current.off("chatHistory");
         socketRef.current.off("receiveMessage");
       }
     };
-  }, [selectedAdmin, socketRef]);
+  }, [selectedAdmin]);
 
-  // Auto-scroll to bottom when messages change
+  const fetchChatHistory = async () => {
+    try {
+      setLoading(true);
+      const token = Cookies.get("adminToken") || Cookies.get("userToken");
+      const userType = Cookies.get("adminToken") ? "admin" : "user";
+      
+      const response = await api.get(`${process.env.REACT_APP_CHAT_API_URL}/chats/${userType}/${(selectedAdmin.adminId || selectedAdmin._id)}`);
+      
+      console.log("Chat history received:", response.data);
+      setMessages(response.data);
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim() || !socketRef.current?.connected) return;
 
-    const userId = JSON.parse(atob(Cookies.get("userToken").split(".")[1])).id;
-    const timestamp = new Date();
+    const token = Cookies.get("adminToken") || Cookies.get("userToken");
+    const tokenData = JSON.parse(atob(token.split(".")[1]));
+    const isAdmin = !!Cookies.get("adminToken");
+    
     const messageId = `local-${Date.now()}`;
-
     const newMsg = {
-      _id: messageId, // Temporary local ID
+      _id: messageId,
       message: newMessage,
-      sender: "user",
-      timestamp: timestamp,
-      userId,
-      adminId: selectedAdmin._id,
-      status: "sending", // Add status indicator
+      sender: isAdmin ? "admin" : "user",
+      timestamp: new Date(),
+      userId: isAdmin ? selectedAdmin._id : tokenData.id,
+      adminId: isAdmin ? tokenData.id : selectedAdmin.adminId
     };
 
+    if(messages.length === 0){
+      newMsg.startConnection = true
+    }
+    // Optimistically add message to UI
     setMessages((prev) => [...prev, newMsg]);
 
-    socketRef.current.emit(
-      "sendMessage",
-      {
-        senderId: userId,
-        receiverId: selectedAdmin._id,
-        message: newMessage,
-        senderType: "user",
-      },
-      (acknowledgment) => {
-        if (acknowledgment?.success) {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg._id === messageId ? { ...msg, status: "delivered" } : msg
-            )
-          );
-        } else {
-          console.error("Message delivery failed:", acknowledgment?.error);
-        }
-      }
-    );
-
+    // Send message to server
+    const response = await api.post(`${process.env.REACT_APP_CHAT_API_URL}/chats/sendMessage`, {
+      ...newMsg
+    });
     setNewMessage("");
   };
 
@@ -107,20 +92,35 @@ const ChatModal = ({ selectedAdmin, onClose, socketRef }) => {
           </button>
         </div>
         <div className="chat-messages">
-          {messages.map((msg, index) => (
-            <div
-              key={msg._id || index}
-              className={`message ${msg.sender === "user" ? "sent" : "received"}`}
-            >
-              <div className="message-content">
-                <p>{msg.message}</p>
-                <span className="timestamp">
-                  {new Date(msg.timestamp).toLocaleTimeString()}
-                  {msg.status === "sending" && " ⌛"}
-                </span>
-              </div>
-            </div>
-          ))}
+          {loading ? (
+            <div className="loading-messages">Loading messages...</div>
+          ) : messages.length === 0 ? (
+            <div className="no-messages">No messages yet. Start the conversation!</div>
+          ) : (
+            messages.map((msg, index) => {
+              const isCurrentUserAdmin = !!Cookies.get("adminToken");
+              
+              // Determine if this message was sent by the current user
+              const isCurrentUserMessage = 
+                (isCurrentUserAdmin && msg.sender === "admin") || 
+                (!isCurrentUserAdmin && msg.sender === "user");
+              
+              return (
+                <div
+                  key={msg._id || index}
+                  className={`message ${isCurrentUserMessage ? "sent" : "received"}`}
+                >
+                  <div className="message-content">
+                    <p>{msg.message}</p>
+                    <span className="timestamp">
+                      {new Date(msg.timestamp).toLocaleTimeString()}
+                      {msg.status === "sending" && " ⌛"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          )}
           <div ref={messagesEndRef} />
         </div>
         <div className="chat-input">

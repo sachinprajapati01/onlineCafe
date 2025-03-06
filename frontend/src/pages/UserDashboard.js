@@ -7,6 +7,7 @@ import UserRegister from "../components/UserRegister";
 import ChatModal from "../components/ChatModal";
 import "./UserDashboard.css";
 import Cookies from "js-cookie";
+import ChatList from "../components/ChatList";
 const ENV = process.env;
 
 const UserDashboard = () => {
@@ -16,6 +17,8 @@ const UserDashboard = () => {
   const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [showChat, setShowChat] = useState(false);
   const socketRef = useRef();
+  const [activeSection, setActiveSection] = useState('admins'); // 'admins' or 'chats'
+  const [activeChatId, setActiveChatId] = useState(null);
 
   useEffect(() => {
     const token = Cookies.get("userToken");
@@ -68,6 +71,17 @@ const UserDashboard = () => {
   const handleChatClick = (admin) => {
     setSelectedAdmin(admin);
     setShowChat(true);
+    setActiveSection('chats');
+    setActiveChatId(admin.adminId);
+  };
+
+  const handleSelectChat = (chat) => {
+    const admin = admins.find(a => a.adminId === chat.participantId);
+    if (admin) {
+      setSelectedAdmin(admin);
+      setShowChat(true);
+      setActiveChatId(chat.participantId);
+    }
   };
 
   const handleCloseChat = () => {
@@ -145,66 +159,94 @@ const UserDashboard = () => {
         </button>
       </Header>
       <div className="dashboard-content">
-        <h2>Available Service Agents</h2>
-        <div className="admin-grid">
-          {admins.map((admin) => (
-            <div key={admin._id} className="admin-card">
-              <div className="admin-header">
-                <h3>{admin.name}</h3>
-                <span
-                  className={`status-indicator ${
-                    admin.isOnline ? "online" : "offline"
-                  }`}
-                >
-                  {admin.isOnline ? "Online" : "Offline"}
-                </span>
-              </div>
-              <div className="admin-details">
-                <div className="detail-item">
-                  <span className="label">Expertise:</span>
-                  <span className="value">{admin.expertise}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="label">Bio:</span>
-                  <p className="value bio">{admin.bio}</p>
-                </div>
-                <div className="detail-item">
-                  <span className="label">Rating:</span>
-                  <div className="rating-display">
-                    <span className="stars">
-                      {"★".repeat(Math.floor(admin.rating))}
-                      {"☆".repeat(5 - Math.floor(admin.rating))}
-                    </span>
-                    <span className="rating-text">
-                      ({admin.rating.toFixed(1)} / 5)
-                    </span>
-                    <span className="total-ratings">
-                      ({admin.totalRatings} reviews)
+        <nav className="dashboard-nav">
+          <button
+            className={activeSection === 'admins' ? 'active' : ''}
+            onClick={() => setActiveSection('admins')}
+          >
+            Available Admins
+          </button>
+          <button
+            className={activeSection === 'chats' ? 'active' : ''}
+            onClick={() => setActiveSection('chats')}
+          >
+            My Chats
+          </button>
+        </nav>
+        
+        <div className="dashboard-main">
+          {activeSection === 'admins' ? (
+            <div className="admin-grid">
+              {admins.map((admin) => (
+                <div key={admin.adminId} className="admin-card">
+                  <div className="admin-header">
+                    <h3>{admin.name}</h3>
+                    <span
+                      className={`status-indicator ${
+                        admin.isOnline ? "online" : "offline"
+                      }`}
+                    >
+                      {admin.isOnline ? "Online" : "Offline"}
                     </span>
                   </div>
+                  <div className="admin-details">
+                    <div className="detail-item">
+                      <span className="label">Expertise:</span>
+                      <span className="value">{admin.expertise}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="label">Bio:</span>
+                      <p className="value bio">{admin.bio}</p>
+                    </div>
+                    <div className="detail-item">
+                      <span className="label">Rating:</span>
+                      <div className="rating-display">
+                        <span className="stars">
+                          {"★".repeat(Math.floor(admin.rating))}
+                          {"☆".repeat(5 - Math.floor(admin.rating))}
+                        </span>
+                        <span className="rating-text">
+                          ({admin.rating.toFixed(1)} / 5)
+                        </span>
+                        <span className="total-ratings">
+                          ({admin.totalRatings} reviews)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="admin-actions">
+                    <button
+                      className={`chat-button ${!admin.isOnline ? "disabled" : ""}`}
+                      onClick={() => handleChatClick(admin)}
+                      disabled={!admin.isOnline}
+                    >
+                      Chat Now
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div className="admin-actions">
-                <button
-                  className={`chat-button ${!admin.isOnline ? "disabled" : ""}`}
-                  onClick={() => handleChatClick(admin)}
-                  disabled={!admin.isOnline}
-                >
-                  Chat Now
-                </button>
-              </div>
+              ))}
             </div>
-          ))}
+          ) : (
+            <div className="chat-section">
+              <ChatList
+                userType="user"
+                userId={JSON.parse(atob(Cookies.get('userToken').split('.')[1])).id}
+                onSelectChat={handleSelectChat}
+                activeChatId={activeChatId}
+                socketRef={socketRef}
+              />
+              {showChat && selectedAdmin && (
+                <ChatModal
+                  selectedAdmin={selectedAdmin}
+                  onClose={handleCloseChat}
+                  socketRef={socketRef}
+                  initiateConnection={true}
+                />
+              )}
+            </div>
+          )}
         </div>
       </div>
-
-      {showChat && selectedAdmin && (
-        <ChatModal 
-          selectedAdmin={selectedAdmin} 
-          onClose={handleCloseChat}
-          socketRef={socketRef}
-        />
-      )}
     </div>
   );
 };

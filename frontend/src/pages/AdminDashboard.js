@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import io from 'socket.io-client';
 import api from "../utils/axiosConfig";
 import Cookies from "js-cookie";
 import Header from "../components/Header";
 import AdminLogin from "../components/AdminLogin";
 import AdminRegister from "../components/AdminRegister";
+import ChatList from "../components/ChatList";
+import ChatModal from "../components/ChatModal";
 import "./AdminDashboard.css";
 const ENV = process.env;
 
@@ -20,15 +23,35 @@ const AdminDashboard = () => {
     rating: 0,
     totalRatings: 0,
   });
-  const [requests, setRequests] = useState([]);
   const [isOnline, setIsOnline] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const socketRef = useRef();
+  const [activeChatId, setActiveChatId] = useState(null);
 
   useEffect(() => {
     const token = Cookies.get("adminToken");
     if (token) {
       setIsAuthenticated(true);
       fetchAdminData();
-      fetchDashboardData();
+
+      // Set up socket connection
+      const socket = io(process.env.REACT_APP_CHAT_API_URL);
+      socketRef.current = socket;
+
+      // Register admin when socket connects
+      socket.on('connect', () => {
+        const adminId = JSON.parse(atob(token.split('.')[1])).id;
+        socket.emit('registerAdmin', adminId);
+      });
+
+      socket.on('connect_error', (error) => {
+        console.error('Socket connection error:', error);
+      });
+
+      return () => {
+        socket.disconnect();
+      };
     }
   }, []);
 
@@ -38,17 +61,6 @@ const AdminDashboard = () => {
       setAdminData(response.data);
     } catch (error) {
       console.error("Error fetching admin data:", error);
-    }
-  };
-
-  const fetchDashboardData = async () => {
-    try {
-      const [requestsRes, ratingsRes] = await Promise.all([
-        api.get(ENV.REACT_APP_CHAT_API_URL +"/requests"),
-      ]);
-      setRequests(requestsRes.data);
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
     }
   };
 
@@ -80,7 +92,6 @@ const AdminDashboard = () => {
     });
     setIsAuthenticated(true);
     fetchAdminData();
-    fetchDashboardData();
   };
 
   const handleRegister = () => {
@@ -117,6 +128,20 @@ const AdminDashboard = () => {
       console.error('Logout error:', error);
       alert('Error during logout. Please try again.');
     }
+  };
+
+  const handleSelectChat = (chat) => {
+    setSelectedUser({
+      _id: chat.participantId,
+      name: chat.participantName
+    });
+    setShowChat(true);
+    setActiveChatId(chat.participantId);
+  };
+
+  const handleCloseChat = () => {
+    setShowChat(false);
+    setSelectedUser(null);
   };
 
   const renderProfile = () => (
@@ -213,24 +238,21 @@ const AdminDashboard = () => {
           </span>
         </div>
       </div>
-      <div className="requests-section">
-        <h3>Chat Requests</h3>
-        <div className="requests-list">
-          {requests.map((request) => (
-            <div key={request._id} className="request-item">
-              <div className="request-info">
-                <span className="user-name">{request.userName}</span>
-                <span className="request-time">
-                  {new Date(request.timestamp).toLocaleString()}
-                </span>
-              </div>
-              <div className="request-actions">
-                <button className="accept-btn">Accept</button>
-                <button className="decline-btn">Decline</button>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="chat-section">
+        <ChatList
+          userType="admin"
+          userId={JSON.parse(atob(Cookies.get('adminToken').split('.')[1])).id}
+          onSelectChat={handleSelectChat}
+          activeChatId={activeChatId}
+          socketRef={socketRef}
+        />
+        {showChat && selectedUser && (
+          <ChatModal
+            selectedAdmin={selectedUser}
+            onClose={handleCloseChat}
+            socketRef={socketRef}
+          />
+        )}
       </div>
     </div>
   );

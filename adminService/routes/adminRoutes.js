@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const Admin = require("../models/Admin");
 const AdminProfile = require("../models/AdminProfile");
 const authMiddleware = require('../middleware/auth');
-const verifyUserToken = require('../middleware/verifyUserToken');
 
 // Register route
 router.post("/register", async (req, res) => {
@@ -104,6 +103,18 @@ router.get("/profile", authMiddleware, async (req, res) => {
   }
 });
 
+router.get("/profile/:id", async (req, res) => {
+  try {
+    const profile = await AdminProfile.findOne({ adminId: req.params.id });
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+    res.json({name : profile.name});
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 router.put("/update-profile", authMiddleware, async (req, res) => {
   try {
     const { name, email, phone, expertise, bio } = req.body;
@@ -151,14 +162,22 @@ router.post("/toggle-status", authMiddleware, async (req, res) => {
   }
 });
 
-// Get active admins (accessible with user token)
-router.get("/activeAdmins", verifyUserToken, async (req, res) => {
+// Get active admins
+router.get("/activeAdmins", async (req, res) => {
   try {
     const admins = await AdminProfile.find({ isOnline: true });
+    const retArray = admins.map(admin => ({
+      adminId: admin.adminId,
+      name: admin.name,
+      expertise: admin.expertise,
+      bio: admin.bio,
+      rating: admin.rating,
+      totalRatings: admin.totalRatings,
+      isOnline: admin.isOnline
+    }));
     res.json(admins);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 module.exports = router;

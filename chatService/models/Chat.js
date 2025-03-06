@@ -2,21 +2,22 @@ const mongoose = require('mongoose');
 
 const chatSchema = new mongoose.Schema({
   userId: {
-    type: String,
+    type : String,
     required: true
   },
   adminId: {
     type: String,
     required: true
   },
-  message: {
+  sender: {
     type: String,
     required: true
   },
-  sender: {
+  message: {
     type: String,
-    enum: ['user', 'admin'],
-    required: true
+  },
+  image: {
+    type: String,
   },
   timestamp: {
     type: Date,
