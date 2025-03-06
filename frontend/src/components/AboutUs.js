@@ -19,7 +19,7 @@ const AboutUs = () => {
         <div className="feature">
           <span role="img" aria-label="laptop">👨‍💻</span>
           <h3>Expert Help</h3>
-          <p>Verified authors assist you.</p>
+          <p>Verified Service Agent assist you.</p>
         </div>
         <div className="feature">
           <span role="img" aria-label="credit-card">💳</span>

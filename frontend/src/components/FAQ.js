@@ -7,7 +7,8 @@ const FAQ = () => {
       <h2>Frequently Asked Questions</h2>
       <details>
         <summary>How do I know my documents are safe?</summary>
-        <p>All documents are encrypted and deleted after processing.</p>
+        <p>You don’t need to worry! Just send your documents with confidence—your privacy and security are our top priorities.</p>
+
       </details>
       <details>
         <summary>What happens if I need corrections in my form?</summary>
