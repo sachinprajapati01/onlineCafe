@@ -1,6 +1,6 @@
 .home-page {
   font-family: "Arial", sans-serif;
-  text-align: center;
+  text-align: left;
   background-color: #f9f9f9;
   padding-bottom: 50px;
 }
@@ -8,6 +8,22 @@
 .content {
   margin-top: 30px;
 }
+.content {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.content p {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.buttons {
+  margin-top: 20px;
+}
+
+
 
 .buttons {
   display: flex;
@@ -36,3 +52,63 @@
 .button:hover {
   opacity: 0.8;
 }
+.role-selection {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  margin-top: 50px;
+  padding: 20px;
+}
+
+/* Center the Get Started button */
+.get-started {
+  margin-bottom: 20px;
+  align-items: center;
+  text-align: center;
+}
+
+.get-started .button.primary {
+  padding: 14px 28px;
+  font-size: 20px;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+
+/* Layout for question and admin link */
+.role-info {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  max-width: 900px;
+}
+
+/* Left-side question */
+.role-question {
+  flex: 1;
+  text-align: left;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Right-side admin portal link */
+.admin-link {
+  flex: 1;
+  text-align: right;
+}
+
+.admin-link a {
+  font-size: 16px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.admin-link a:hover {
+  text-decoration: underline;
+}
+
